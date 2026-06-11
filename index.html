@@ -3,544 +3,500 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>امتحان تطبيقات الدائرة الكهربية - 12 عام فيزياء</title>
+    <title>⚡ فيزياء الصف الثاني عشر - تطبيقات الدائرة الكهربية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Cairo', sans-serif; }
-        .formula { font-family: 'Times New Roman', serif; direction: ltr; display: inline-block; }
-        .option-correct { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; transform: scale(1.02); }
-        .option-wrong { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; animation: shake 0.5s; }
-        .option-selected { border: 3px solid #6366f1; background: #eef2ff; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .fade-in { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .progress-fill { transition: width 0.5s ease; }
-        .timer-warning { animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
+        .formula { font-family: 'Times New Roman', serif; font-style: italic; direction: ltr; display: inline-block; }
+        .timer-warning { color: #dc2626 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 50% { opacity: 0.7; } }
+        @media print { .no-print { display: none !important; } }
+        .success-badge { 
+            display: inline-block; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+        .grade-excellent { background: #dcfce7; color: #166534; }
+        .grade-good { background: #fef3c7; color: #92400e; }
+        .grade-pass { background: #dbeafe; color: #1e40af; }
+        .grade-fail { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8">
-    <div class="max-w-5xl mx-auto">
-        <!-- Header -->
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden mb-6 fade-in">
-            <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 text-white text-center">
-                <div class="text-6xl mb-3">⚡</div>
-                <h1 class="text-3xl md:text-4xl font-bold mb-2">امتحان تطبيقات الدائرة الكهربية</h1>
-                <h2 class="text-xl md:text-2xl font-semibold opacity-90">الصف الثاني عشر - عام - فيزياء</h2>
-                <h3 class="text-lg opacity-80 mt-2">الوحدة الأولى: الكهرباء والتيار</h3>
-            </div>
-            <div class="p-6 bg-gray-50">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                    <div class="bg-white rounded-xl p-4 shadow">
-                        <div class="text-3xl mb-1">📝</div>
-                        <div class="text-sm text-gray-500">عدد الأسئلة</div>
-                        <div class="text-2xl font-bold text-indigo-600" id="totalQ">15</div>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 shadow">
-                        <div class="text-3xl mb-1">⭐</div>
-                        <div class="text-sm text-gray-500">الدرجة الكلية</div>
-                        <div class="text-2xl font-bold text-purple-600">30</div>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 shadow">
-                        <div class="text-3xl mb-1">⏱️</div>
-                        <div class="text-sm text-gray-500">الوقت المتبقي</div>
-                        <div class="text-2xl font-bold text-pink-600" id="timer">30:00</div>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 shadow">
-                        <div class="text-3xl mb-1">📊</div>
-                        <div class="text-sm text-gray-500">التقدم</div>
-                        <div class="text-2xl font-bold text-green-600" id="progress">0/15</div>
-                    </div>
-                </div>
-                <!-- Progress Bar -->
-                <div class="mt-4 bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div id="progressBar" class="progress-fill bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
+<body class="bg-gray-50 text-gray-800 p-4 md:p-8 min-h-screen">
 
-        <!-- Student Info -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 fade-in">
-            <h3 class="font-bold text-lg mb-4 text-gray-800">📋 بيانات الطالب</h3>
-            <div class="grid md:grid-cols-3 gap-4">
-                <input type="text" id="studentName" placeholder="الاسم الثلاثي" class="border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-indigo-500 focus:outline-none">
-                <input type="text" id="studentId" placeholder="رقم الجلوس" class="border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-indigo-500 focus:outline-none">
-                <input type="text" id="studentClass" placeholder="الشعبة / الفصل" class="border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-indigo-500 focus:outline-none">
-            </div>
-        </div>
-
-        <!-- Questions Container -->
-        <div id="questionsContainer" class="space-y-6"></div>
-
-        <!-- Submit Button -->
-        <div class="mt-8 text-center">
-            <button onclick="submitExam()" id="submitBtn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xl font-bold px-12 py-4 rounded-2xl shadow-2xl transform hover:scale-105 transition">
-                📝 تسليم الامتحان
-            </button>
-            <p class="text-sm text-gray-500 mt-3">تأكد من إجابة جميع الأسئلة قبل التسليم</p>
-        </div>
-
-        <!-- Results Section (Hidden Initially) -->
-        <div id="resultsSection" class="hidden mt-8 bg-white rounded-3xl shadow-2xl p-8 fade-in">
-            <div id="resultsContent"></div>
-        </div>
-
-        <!-- Formulas Reference -->
-        <div class="mt-8 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl p-6 border-2 border-indigo-300">
-            <h3 class="font-bold text-indigo-900 mb-4 flex items-center gap-2">
-                <span class="text-2xl">📐</span> الصيغ والمفاهيم المساعدة
-            </h3>
-            <div class="grid md:grid-cols-2 gap-3 text-sm">
-                <div class="formula bg-white p-3 rounded-lg shadow">V = I × R</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">P = V × I = I²R = V²/R</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">R_total = R₁ + R₂ + ... (توالي)</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">1/R = 1/R₁ + 1/R₂ + ... (توازي)</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">ΣI_in = ΣI_out (كيرشوف 1)</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">ΣV = 0 (كيرشوف 2)</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">E = P × t</div>
-                <div class="formula bg-white p-3 rounded-lg shadow">Q = I² × R × t</div>
-            </div>
+    <!-- Timer -->
+    <div id="timer-container" class="max-w-4xl mx-auto mb-4 text-center no-print">
+        <div class="bg-white p-4 rounded-xl shadow-md inline-block border-2 border-indigo-100">
+            <span class="text-gray-600 ml-2">⏱️ الوقت المتبقي:</span>
+            <span id="timer" class="text-2xl font-bold text-indigo-600 font-mono">60:00</span>
         </div>
     </div>
 
-    <script>
-        // ==================== QUESTIONS DATABASE ====================
-        const questions = [
-            {
-                id: 1,
-                type: 'mcq',
-                points: 2,
-                question: 'ما هو المقصود بـ "الحمل الزائد" (Overload) في الدائرة الكهربية؟',
-                options: [
-                    'توصيل مصدر جهد بدونه حمل',
-                    'سحب تيار أكبر من السعة المسموحة للدائرة',
-                    'انقطاع التيار فجأة',
-                    'ارتفاع الجهد عن المعدل الطبيعي'
-                ],
-                correct: 1,
-                explanation: 'الحمل الزائد يحدث عندما يسحب الحمل تياراً أكبر من السعة الآمنة للدائرة، مما يؤدي لارتفاع درجة الحرارة.'
-            },
-            {
-                id: 2,
-                type: 'mcq',
-                points: 2,
-                question: 'ما الفرق الرئيسي بين "الدائرة القصيرة" (Short Circuit) و"الحمل الزائد"؟',
-                options: [
-                    'لا يوجد فرق بينهما',
-                    'الدائرة القصيرة مسار منخفض المقاومة جداً يتجاوز الحمل',
-                    'الحمل الزائد أخطر من الدائرة القصيرة',
-                    'الدائرة القصيرة تحدث فقط في التيار المتناوب'
-                ],
-                correct: 1,
-                explanation: 'الدائرة القصيرة تحدث عندما يتجاوز التيار الحمل بسبب مسار منخفض المقاومة جداً، بينما الحمل الزائد هو سحب تيار أكبر من السقة المسموحة.'
-            },
-            {
-                id: 3,
-                type: 'mcq',
-                points: 2,
-                question: 'ما وظيفة المنصهر (Fuse) في الدائرة الكهربية؟',
-                options: [
-                    'زيادة التيار في الدائرة',
-                    'تخزين الطاقة الكهربية',
-                    'حماية الدائرة من التيار الزائد بالانصهار وقطع التيار',
-                    'تحويل التيار المستمر إلى متناوب'
-                ],
-                correct: 2,
-                explanation: 'المنصهر يحتوي على سلك رفيع ينصهر عند مرور تيار أكبر من قيمته المقننة، فيقطع الدائرة ويحمي الأجهزة.'
-            },
-            {
-                id: 4,
-                type: 'mcq',
-                points: 2,
-                question: 'ما الميزة الرئيسية لقاطع الدائرة (Circuit Breaker) على المنصهر؟',
-                options: [
-                    'أرخص ثمناً',
-                    'يمكن إعادة تشغيله بعد فصل التيار دون استبدال',
-                    'أصغر حجماً',
-                    'يتحمل تياراً أعلى دائماً'
-                ],
-                correct: 1,
-                explanation: 'قاطع الدائرة يمكن إعادة ضبطه (Reset) بعد فصل التيار، بينما المنصهر يجب استبداله بعد انصهاره.'
-            },
-            {
-                id: 5,
-                type: 'mcq',
-                points: 2,
-                question: 'ما الوظيفة الأساسية لقاطع التسرب الأرضي (GFI/GFCI)؟',
-                options: [
-                    'حماية الأجهزة من الحمل الزائد',
-                    'حماية الإنسان من الصدمة الكهربية عند حدوث تسرب تيار',
-                    'تثبيت الجهد في الدائرة',
-                    'تحويل التيار المتناوب إلى مستمر'
-                ],
-                correct: 1,
-                explanation: 'GFI يكتشف أي فرق بين التيار الداخل والخارج (تسرب) ويقطع التيار فوراً لحماية الإنسان من الصعق.'
-            },
-            {
-                id: 6,
-                type: 'mcq',
-                points: 2,
-                question: 'لماذا تُوصَّل الأجهزة المنزلية على التوازي وليس على التوالي؟',
-                options: [
-                    'لتوفير في الأسلاك',
-                    'لأن كل جهاز يحتاج نفس الجهد (120V) ويعمل مستقلاً عن الآخر',
-                    'لأن التوالي أسهل في التركيب',
-                    'لأن التوازي يقلل استهلاك الطاقة'
-                ],
-                correct: 1,
-                explanation: 'في التوازي، كل جهاز يحصل على الجهد الكامل (120V) ويعمل بشكل مستقل، فإذا تعطل جهاز لا تتأثر الأجهزة الأخرى.'
-            },
-            {
-                id: 7,
-                type: 'mcq',
-                points: 2,
-                question: 'في دائرة منزلية سعتها 15 أمبير، إذا كان هناك جهازان يسحبان 6 أمبير و 7 أمبير، هل يمكن تشغيل جهاز ثالث يسحب 5 أمبير؟',
-                options: [
-                    'نعم، لأن المجموع 18 أمبير',
-                    'لا، لأن المجموع 18 أمبير وهو أكبر من سعة الدائرة 15 أمبير',
-                    'نعم، لأن الأجهزة على التوازي',
-                    'لا يمكن تحديد ذلك بدون معرفة الجهد'
-                ],
-                correct: 1,
-                explanation: 'مجموع التيار = 6 + 7 + 5 = 18 أمبير، وهذا يتجاوز سعة الدائرة (15A)، مما سيؤدي لفصل القاطع.'
-            },
-            {
-                id: 8,
-                type: 'mcq',
-                points: 2,
-                question: 'كيف يُوصَّل الأميتر (Ammeter) في الدائرة لقياس التيار؟',
-                options: [
-                    'على التوازي مع المقاومة',
-                    'على التوالي مع العنصر المراد قياس التيار المار فيه',
-                    'يُوصَّل مباشرة بمصدر الجهد',
-                    'لا يحتاج لتوصيل'
-                ],
-                correct: 1,
-                explanation: 'الأميتر يُوصَّل على التوالي حتى يمر فيه نفس التيار المراد قياسه، ومقاومته الداخلية صغيرة جداً.'
-            },
-            {
-                id: 9,
-                type: 'mcq',
-                points: 2,
-                question: 'كيف يُوصَّل الفولتميتر (Voltmeter) في الدائرة لقياس فرق الجهد؟',
-                options: [
-                    'على التوالي مع المقاومة',
-                    'على التوازي مع العنصر المراد قياس الجهد عليه',
-                    'يُوصَّل مباشرة بمصدر الجهد فقط',
-                    'لا يمكن قياس الجهد'
-                ],
-                correct: 1,
-                explanation: 'الفولتميتر يُوصَّل على التوازي مع العنصر المراد قياس الجهد عليه، ومقاومته الداخلية كبيرة جداً.'
-            },
-            {
-                id: 10,
-                type: 'mcq',
-                points: 2,
-                question: 'ينص قانون كيرشوف الأول (KCL) على أن:',
-                options: [
-                    'مجموع الجهود في حلقة مغلقة يساوي صفراً',
-                    'مجموع التيارات الداخلة إلى عقدة = مجموع التيارات الخارجة منها',
-                    'التيار يتناقص في كل مقاومة',
-                    'الجهد يتوزع بالتساوي على جميع الفروع'
-                ],
-                correct: 1,
-                explanation: 'قانون كيرشوف الأول (قانون العقد) مبني على حفظ الشحنة: ΣI_in = ΣI_out'
-            },
-            {
-                id: 11,
-                type: 'mcq',
-                points: 2,
-                question: 'ينص قانون كيرشوف الثاني (KVL) على أن:',
-                options: [
-                    'التيار ثابت في جميع فروع الدائرة',
-                    'المجموع الجبري للقوى الدافعة = المجموع الجبري لهبوطات الجهد في أي حلقة مغلقة',
-                    'الجهد يتناقص في كل عقدة',
-                    'المقاومة الكلية = مجموع المقاومات'
-                ],
-                correct: 1,
-                explanation: 'قانون كيرشوف الثاني (قانون الحلقات) مبني على حفظ الطاقة: Σε = ΣIR أو ΣV = 0'
-            },
-            {
-                id: 12,
-                type: 'calculation',
-                points: 2,
-                question: 'ثلاث مقاومات R₁=10Ω، R₂=20Ω، R₃=30Ω وُصلت على التوالي. احسب المقاومة المكافئة:',
-                answer: '60',
-                unit: 'Ω',
-                explanation: 'في التوالي: R_total = R₁ + R₂ + R₃ = 10 + 20 + 30 = 60 Ω'
-            },
-            {
-                id: 13,
-                type: 'calculation',
-                points: 2,
-                question: 'مقاومتان R₁=6Ω و R₂=3Ω وُصلتا على التوازي. احسب المقاومة المكافئة:',
-                answer: '2',
-                unit: 'Ω',
-                explanation: 'في التوازي: 1/R = 1/R₁ + 1/R₂ = 1/6 + 1/3 = 1/6 + 2/6 = 3/6 = 1/2، إذن R = 2 Ω'
-            },
-            {
-                id: 14,
-                type: 'calculation',
-                points: 2,
-                question: 'مصباح يعمل على جهد 120V ويسحب تيار 2A. احسب القدرة الكهربية المستهلكة:',
-                answer: '240',
-                unit: 'W',
-                explanation: 'P = V × I = 120 × 2 = 240 W'
-            },
-            {
-                id: 15,
-                type: 'mcq',
-                points: 2,
-                question: 'في الدوائر المنزلية، السلك "الحي" (Hot) لونه عادة يكون:',
-                options: [
-                    'أبيض',
-                    'أسود أو أحمر',
-                    'أخضر أو عارٍ',
-                    'أزرق'
-                ],
-                correct: 1,
-                explanation: 'السلك الحي (Hot) يكون عادة أسود أو أحمر، السلك المتعادل (Neutral) أبيض، وسلك التأريض أخضر أو عارٍ.'
-            }
-        ];
+    <!-- Controls -->
+    <div class="max-w-4xl mx-auto mb-6 flex flex-wrap gap-3 justify-center no-print">
+        <button onclick="toggleAnswers()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer">
+            👁️ إظهار / إخفاء الإجابات النموذجية
+        </button>
+        <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white px-5 py-2 rounded-lg font-medium transition shadow cursor-pointer">
+            🖨️ طباعة / حفظ كـ PDF
+        </button>
+    </div>
 
-        // ==================== STATE ====================
-        let userAnswers = {};
-        let timeLeft = 30 * 60; // 30 minutes in seconds
+    <!-- Header -->
+    <header class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md mb-8 border-r-4 border-indigo-600">
+        <div class="text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">⚡ فيزياء الصف الثاني عشر عام</h1>
+            <h2 class="text-lg text-indigo-600 font-semibold">الوحدة الأولى: تطبيقات الدائرة الكهربية</h2>
+            <p class="text-sm text-gray-600 mt-2">Overload, Short Circuit, Protection Devices & Kirchhoff's Laws</p>
+        </div>
+        <div class="mt-4 flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+            <span>📅 التاريخ: <input type="text" class="border-b border-gray-400 bg-transparent w-28 text-center"></span>
+            <span>👤 الاسم: <input type="text" id="studentName" class="border-b border-gray-400 bg-transparent w-32 text-center" placeholder="أدخل الاسم"></span>
+            <span>🏫 الشعبة: <input type="text" id="studentClass" class="border-b border-gray-400 bg-transparent w-28 text-center" placeholder="الفصل"></span>
+            <span>⏱️ المدة: 60 دقيقة</span>
+            <span>📊 المجموع: 100 درجة</span>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto space-y-8">
+
+        <!-- Section 1: Overload & Short Circuit -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">🔹 الجزء الأول: الحمل الزائد والدائرة القصيرة</h2>
+            <ol id="section1-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-1">
+                    <strong>1.</strong> يُعرَّف "الحمل الزائد" (Overload) في الدائرة الكهربية بأنه:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="a" class="ml-2"> أ) توصيل مصدر جهد بدون حمل</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="b" class="ml-2"> ب) سحب تيار أكبر من السعة المسموحة للدائرة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="c" class="ml-2"> ج) انقطاع التيار فجأة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q1" value="d" class="ml-2"> د) ارتفاع الجهد عن المعدل الطبيعي</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) يحدث عندما يسحب الحمل تياراً أكبر من السعة الآمنة، مما يؤدي لارتفاع درجة الحرارة</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-2">
+                    <strong>2.</strong> ما الفرق الرئيسي بين "الدائرة القصيرة" (Short Circuit) و"الحمل الزائد"؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="a" class="ml-2"> أ) لا يوجد فرق بينهما</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="b" class="ml-2"> ب) الدائرة القصيرة مسار منخفض المقاومة جداً يتجاوز الحمل، بينما الحمل الزائد هو سحب تيار أكبر من السعة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="c" class="ml-2"> ج) الحمل الزائد أخطر دائماً من الدائرة القصيرة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q2" value="d" class="ml-2"> د) الدائرة القصيرة تحدث فقط في التيار المتناوب</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) الدائرة القصيرة مسار منخفض المقاومة يتجاوز الحمل، بينما الحمل الزائد سحب تيار زائد</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-3">
+                    <strong>3.</strong> ما السبب الرئيسي لحدوث الدائرة القصيرة (Short Circuit)؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="a" class="ml-2"> أ) توصيل أجهزة كثيرة على التوازي</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="b" class="ml-2"> ب) تلامس السلك الحي (Hot) مع السلك المتعادل (Neutral) مباشرة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="c" class="ml-2"> ج) استخدام أسلاك طويلة جداً</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q3" value="d" class="ml-2"> د) انخفاض الجهد الكهربي</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) تلامس السلك الحي مع المتعادل مباشرة يخلق مساراً منخفض المقاومة جداً فيمر تيار هائل</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-4">
+                    <strong>4.</strong> عند حدوث دائرة قصيرة، ماذا يحدث لمقاومة الدائرة الكلية؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="a" class="ml-2"> أ) تزداد بشكل كبير</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="b" class="ml-2"> ب) تبقى ثابتة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="c" class="ml-2"> ج) تقترب من الصفر تقريباً</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q4" value="d" class="ml-2"> د) تصبح لا نهائية</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) المقاومة تقترب من الصفر، مما يسبب مرور تيار هائل (I = V/R)</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section 2: Protection Devices -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">🔹 الجزء الثاني: أجهزة الحماية - المنصهرات والقواطع</h2>
+            <ol id="section2-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-5">
+                    <strong>5.</strong> ما وظيفة المنصهر (Fuse) في الدائرة الكهربية؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="a" class="ml-2"> أ) زيادة التيار في الدائرة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="b" class="ml-2"> ب) تخزين الطاقة الكهربية</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="c" class="ml-2"> ج) حماية الدائرة من التيار الزائد بالانصهار وقطع التيار</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q5" value="d" class="ml-2"> د) تحويل التيار المستمر إلى متناوب</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ج) يحتوي على سلك رفيع ينصهر عند مرور تيار أكبر من قيمته المقننة</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-6">
+                    <strong>6.</strong> ما الميزة الرئيسية لقاطع الدائرة (Circuit Breaker) على المنصهر؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="a" class="ml-2"> أ) أرخص ثمناً دائماً</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="b" class="ml-2"> ب) يمكن إعادة تشغيله بعد فصل التيار دون استبدال</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="c" class="ml-2"> ج) أصغر حجماً دائماً</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q6" value="d" class="ml-2"> د) يتحمل تياراً أعلى دائماً</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) يمكن إعادة ضبطه (Reset) بعد فصل التيار، بينما المنصهر يجب استبداله</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-7">
+                    <strong>7.</strong> ما الوظيفة الأساسية لقاطع التسرب الأرضي (GFI/GFCI)؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="a" class="ml-2"> أ) حماية الأجهزة من الحمل الزائد فقط</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="b" class="ml-2"> ب) حماية الإنسان من الصدمة الكهربية عند حدوث تسرب تيار</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="c" class="ml-2"> ج) تثبيت الجهد في الدائرة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q7" value="d" class="ml-2"> د) تحويل التيار المتناوب إلى مستمر</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) يكتشف أي فرق بين التيار الداخل والخارج ويقطع التيار فوراً لحماية الإنسان</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-8">
+                    <strong>8.</strong> كيف يعمل قاطع التسرب الأرضي (GFI) على حماية الإنسان؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="a" class="ml-2"> أ) يخفض الجهد إلى مستوى آمن</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="b" class="ml-2"> ب) يقارن بين التيار الداخل والخارج، ويقطع التيار عند وجود فرق (تسرب)</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="c" class="ml-2"> ج) يزيد من مقاومة الجسم</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q8" value="d" class="ml-2"> د) يخزن الشحنات الزائدة</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) إذا خرج تيار أقل من الداخل، معناه أن هناك تسرباً (ربما عبر جسم الإنسان) فيقطع التيار</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section 3: Home Circuits & Capacity -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">🔹 الجزء الثالث: الدوائر المنزلية وسعة الدوائر</h2>
+            <ol id="section3-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-9">
+                    <strong>9.</strong> لماذا تُوصَّل الأجهزة المنزلية على التوازي وليس على التوالي؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="a" class="ml-2"> أ) لتوفير في الأسلاك</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="b" class="ml-2"> ب) لأن كل جهاز يحتاج نفس الجهد (120V) ويعمل مستقلاً عن الآخر</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="c" class="ml-2"> ج) لأن التوالي أسهل في التركيب</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q9" value="d" class="ml-2"> د) لأن التوازي يقلل استهلاك الطاقة دائماً</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) في التوازي، كل جهاز يحصل على الجهد الكامل ويعمل بشكل مستقل</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-10">
+                    <strong>10.</strong> في دائرة منزلية سعتها 15 أمبير، إذا كان هناك جهازان يسحبان 6 أمبير و 7 أمبير، هل يمكن تشغيل جهاز ثالث يسحب 5 أمبير؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="a" class="ml-2"> أ) نعم، لأن المجموع 18 أمبير</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="b" class="ml-2"> ب) لا، لأن المجموع 18 أمبير وهو أكبر من سعة الدائرة 15 أمبير</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="c" class="ml-2"> ج) نعم، لأن الأجهزة على التوازي</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q10" value="d" class="ml-2"> د) لا يمكن تحديد ذلك بدون معرفة الجهد</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) مجموع التيار = 6 + 7 + 5 = 18A، وهذا يتجاوز سعة الدائرة (15A)</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-11">
+                    <strong>11.</strong> في الدوائر المنزلية، السلك "الحي" (Hot) لونه عادة يكون:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="a" class="ml-2"> أ) أبيض</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="b" class="ml-2"> ب) أسود أو أحمر</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="c" class="ml-2"> ج) أخضر أو عارٍ</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q11" value="d" class="ml-2"> د) أزرق</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) السلك الحي أسود أو أحمر، المتعادل أبيض، والتأريض أخضر أو عارٍ</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-12">
+                    <strong>12.</strong> ما وظيفة سلك التأريض (Ground Wire) في الدوائر المنزلية؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="a" class="ml-2"> أ) نقل التيار الكهربائي للأجهزة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="b" class="ml-2"> ب) توفير مسار آمن للتيار الزائد أو المتسرب إلى الأرض</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="c" class="ml-2"> ج) زيادة الجهد الكهربي</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q12" value="d" class="ml-2"> د) تقليل استهلاك الطاقة</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) يوفر مساراً بديلاً آمناً للتيار المتسرب لحماية الإنسان من الصعق</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section 4: Kirchhoff's Laws & Measurement -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">🔹 الجزء الرابع: قوانين كيرشوف وأدوات القياس</h2>
+            <ol id="section4-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-13">
+                    <strong>13.</strong> ينص قانون كيرشوف الأول (KCL) على أن:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="a" class="ml-2"> أ) مجموع الجهود في حلقة مغلقة يساوي صفراً</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="b" class="ml-2"> ب) مجموع التيارات الداخلة إلى عقدة = مجموع التيارات الخارجة منها</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="c" class="ml-2"> ج) التيار يتناقص في كل مقاومة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q13" value="d" class="ml-2"> د) الجهد يتوزع بالتساوي على جميع الفروع</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) قانون العقد مبني على حفظ الشحنة: ΣI_in = ΣI_out</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-14">
+                    <strong>14.</strong> ينص قانون كيرشوف الثاني (KVL) على أن:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="a" class="ml-2"> أ) التيار ثابت في جميع فروع الدائرة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="b" class="ml-2"> ب) المجموع الجبري للقوى الدافعة = المجموع الجبري لهبوطات الجهد في أي حلقة مغلقة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="c" class="ml-2"> ج) الجهد يتناقص في كل عقدة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q14" value="d" class="ml-2"> د) المقاومة الكلية = مجموع المقاومات</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) قانون الحلقات مبني على حفظ الطاقة: Σε = ΣIR أو ΣV = 0</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-15">
+                    <strong>15.</strong> كيف يُوصَّل الأميتر (Ammeter) في الدائرة لقياس التيار؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="a" class="ml-2"> أ) على التوازي مع المقاومة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="b" class="ml-2"> ب) على التوالي مع العنصر المراد قياس التيار المار فيه</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="c" class="ml-2"> ج) يُوصَّل مباشرة بمصدر الجهد</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q15" value="d" class="ml-2"> د) لا يحتاج لتوصيل</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) على التوالي حتى يمر فيه نفس التيار، ومقاومته الداخلية صغيرة جداً</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-16">
+                    <strong>16.</strong> كيف يُوصَّل الفولتميتر (Voltmeter) في الدائرة لقياس فرق الجهد؟<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="a" class="ml-2"> أ) على التوالي مع المقاومة</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="b" class="ml-2"> ب) على التوازي مع العنصر المراد قياس الجهد عليه</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="c" class="ml-2"> ج) يُوصَّل مباشرة بمصدر الجهد فقط</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q16" value="d" class="ml-2"> د) لا يمكن قياس الجهد</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) على التوازي مع العنصر، ومقاومته الداخلية كبيرة جداً حتى لا يسحب تياراً</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Section 5: Calculations & Applications -->
+        <section class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-indigo-700">🔹 الجزء الخامس: مسائل حسابية وتطبيقات</h2>
+            <ol id="section5-list" class="space-y-4 text-sm">
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-17">
+                    <strong>17.</strong> ثلاث مقاومات R₁=10Ω، R₂=20Ω، R₃=30Ω وُصلت على التوالي. المقاومة المكافئة تساوي:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="a" class="ml-2"> أ) 60 Ω</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="b" class="ml-2"> ب) 5.5 Ω</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="c" class="ml-2"> ج) 6000 Ω</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q17" value="d" class="ml-2"> د) 10 Ω</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) في التوالي: R_total = 10 + 20 + 30 = 60 Ω</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-18">
+                    <strong>18.</strong> مقاومتان R₁=6Ω و R₂=3Ω وُصلتا على التوازي. المقاومة المكافئة تساوي:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="a" class="ml-2"> أ) 9 Ω</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="b" class="ml-2"> ب) 2 Ω</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="c" class="ml-2"> ج) 4.5 Ω</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q18" value="d" class="ml-2"> د) 18 Ω</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) 1/R = 1/6 + 1/3 = 1/6 + 2/6 = 3/6 = 1/2، إذن R = 2 Ω</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-19">
+                    <strong>19.</strong> مصباح يعمل على جهد 120V ويسحب تيار 2A. القدرة الكهربية المستهلكة تساوي:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="a" class="ml-2"> أ) 60 W</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="b" class="ml-2"> ب) 240 W</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="c" class="ml-2"> ج) 120 W</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q19" value="d" class="ml-2"> د) 2 W</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: ب) P = V × I = 120 × 2 = 240 W</div>
+                </li>
+                <li class="border-r-4 border-indigo-500 pr-4 py-2" id="q-20">
+                    <strong>20.</strong> بطارية قوتها الدافعة 12V ومقاومتها الداخلية 1Ω، وُصلت بمقاومة خارجية 5Ω. شدة التيار المار في الدائرة تساوي:<br>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="a" class="ml-2"> أ) 2 A</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="b" class="ml-2"> ب) 12 A</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="c" class="ml-2"> ج) 60 A</label>
+                    <label class="mr-4 cursor-pointer block mt-1"><input type="radio" name="q20" value="d" class="ml-2"> د) 2.4 A</label>
+                    <div class="answer-box text-green-700 mt-2 font-medium hidden">✅ الإجابة: أ) I = ε / (R + r) = 12 / (5 + 1) = 12 / 6 = 2 A</div>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Submit Button -->
+        <div class="text-center no-print pb-8">
+            <button onclick="gradeExam()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-lg px-10 py-4 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer">
+                📝 تسليم وتصحيح الامتحان
+            </button>
+        </div>
+    </main>
+
+    <!-- Results Panel -->
+    <div id="results-panel" class="max-w-4xl mx-auto mt-8 bg-white p-8 rounded-2xl shadow-2xl border-t-4 border-emerald-500 hidden no-print">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">📊 نتائج الامتحان</h2>
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-blue-50 p-4 rounded-xl text-center"><p>اسم الطالب</p><p id="res-name" class="font-bold text-xl text-indigo-700">-</p></div>
+            <div class="bg-purple-50 p-4 rounded-xl text-center"><p>التاريخ</p><p id="res-date" class="font-bold text-xl text-purple-700">-</p></div>
+            <div class="bg-emerald-50 p-4 rounded-xl text-center"><p>المجموع</p><p id="res-total" class="font-bold text-3xl text-emerald-600">0 / 100</p></div>
+        </div>
+
+        <!-- Success Rate Badge -->
+        <div class="text-center mb-6">
+            <span id="success-badge" class="success-badge grade-excellent">ممتاز - 100%</span>
+            <p id="success-percent" class="text-4xl font-bold text-emerald-600 mt-2">100%</p>
+            <p class="text-sm text-gray-500">نسبة النجاح</p>
+        </div>
+
+        <!-- Performance Breakdown -->
+        <div class="bg-gray-50 p-6 rounded-xl mb-6">
+            <h3 class="font-bold text-lg mb-4 text-gray-800">📈 تفصيل الأداء حسب القسم:</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">الحمل الزائد والدائرة القصيرة</span>
+                    <span id="sec1-score" class="font-bold text-indigo-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">أجهزة الحماية - المنصهرات والقواطع</span>
+                    <span id="sec2-score" class="font-bold text-indigo-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">الدوائر المنزلية وسعة الدوائر</span>
+                    <span id="sec3-score" class="font-bold text-indigo-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">قوانين كيرشوف وأدوات القياس</span>
+                    <span id="sec4-score" class="font-bold text-indigo-600">0/4</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700">مسائل حسابية وتطبيقات</span>
+                    <span id="sec5-score" class="font-bold text-indigo-600">0/4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Send Button -->
+        <div class="text-center mb-6">
+            <button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-lg px-8 py-3 rounded-xl font-bold shadow-xl transition transform hover:scale-105 cursor-pointer">
+                📧 إرسال النتائج للمعلم
+            </button>
+            <p id="emailStatus" class="text-sm mt-2 text-center font-medium"></p>
+        </div>
+
+        <div class="flex gap-3 justify-center">
+            <button onclick="window.print()" class="bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold">🖨️ طباعة النتائج</button>
+        </div>
+    </div>
+
+    <footer class="max-w-4xl mx-auto mt-10 mb-8 text-center text-gray-500 text-sm no-print">
+        © الفيزياء للصف الثاني عشر عام | تطبيقات الدائرة الكهربية | Mr. Mohammed Hesham
+    </footer>
+
+    <script>
+        // EmailJS Configuration
+        const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
+        const SERVICE_ID = "service_w15m64i";
+        const TEMPLATE_ID = "template_5b0u2tq";
+        const TARGET_EMAIL = "mohammedhesham872@gmail.com";
+
+        (function(){ emailjs.init(PUBLIC_KEY); })();
+
+        // Timer
+        let timeRemaining = 3600;
         let timerInterval;
 
-        // ==================== RENDER QUESTIONS ====================
-        function renderQuestions() {
-            const container = document.getElementById('questionsContainer');
-            let html = '';
-            
-            questions.forEach((q, index) => {
-                const qNumber = index + 1;
-                const bgColor = index % 3 === 0 ? 'from-blue-50 to-indigo-50 border-blue-500' : 
-                               index % 3 === 1 ? 'from-purple-50 to-pink-50 border-purple-500' : 
-                               'from-green-50 to-teal-50 border-green-500';
-                
-                html += `
-                    <div class="bg-gradient-to-br ${bgColor} rounded-2xl p-6 shadow-lg border-r-4 fade-in" id="q${q.id}">
-                        <div class="flex items-start justify-between mb-4 flex-wrap gap-2">
-                            <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2">
-                                <span class="bg-white text-indigo-600 rounded-full w-10 h-10 flex items-center justify-center font-bold shadow">${qNumber}</span>
-                                السؤال ${qNumber}
-                            </h3>
-                            <span class="bg-white px-3 py-1 rounded-full text-sm font-semibold text-purple-600 shadow">${q.points} ${q.points > 1 ? 'درجات' : 'درجة'}</span>
-                        </div>
-                        <p class="font-semibold text-gray-800 mb-4 text-lg">${q.question}</p>
-                        
-                        ${q.type === 'mcq' ? renderMCQ(q) : renderCalculation(q)}
-                        
-                        <div id="explanation${q.id}" class="hidden mt-4 bg-white rounded-xl p-4 border-2 border-green-400">
-                            <div class="flex items-start gap-2">
-                                <span class="text-2xl">💡</span>
-                                <div>
-                                    <p class="font-bold text-green-700 mb-1">الإجابة الصحيحة:</p>
-                                    <p class="text-gray-700">${q.explanation}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        function renderMCQ(q) {
-            const letters = ['أ', 'ب', 'ج', 'د'];
-            return `
-                <div class="space-y-3">
-                    ${q.options.map((opt, i) => `
-                        <label class="flex items-center gap-3 bg-white rounded-xl p-4 cursor-pointer hover:shadow-lg transition border-2 border-transparent" id="opt${q.id}_${i}">
-                            <input type="radio" name="q${q.id}" value="${i}" onchange="selectAnswer(${q.id}, ${i})" class="w-5 h-5 text-indigo-600">
-                            <span class="bg-indigo-100 text-indigo-700 rounded-full w-8 h-8 flex items-center justify-center font-bold">${letters[i]}</span>
-                            <span class="flex-1 text-gray-800">${opt}</span>
-                        </label>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        function renderCalculation(q) {
-            return `
-                <div class="bg-white rounded-xl p-4">
-                    <label class="block text-gray-700 mb-2 font-semibold">الإجابة:</label>
-                    <div class="flex items-center gap-3">
-                        <input type="number" step="any" id="calc${q.id}" oninput="selectCalcAnswer(${q.id}, this.value)" 
-                            class="flex-1 border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-indigo-500 focus:outline-none text-lg" 
-                            placeholder="اكتب القيمة الرقمية">
-                        <span class="bg-indigo-100 text-indigo-700 px-4 py-3 rounded-lg font-bold">${q.unit}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // ==================== ANSWER HANDLING ====================
-        function selectAnswer(qId, optIndex) {
-            userAnswers[qId] = optIndex;
-            updateProgress();
-            
-            // Highlight selected
-            const options = document.querySelectorAll(`[id^="opt${qId}_"]`);
-            options.forEach((opt, i) => {
-                if (i === optIndex) {
-                    opt.classList.add('option-selected');
-                } else {
-                    opt.classList.remove('option-selected');
-                }
-            });
-        }
-
-        function selectCalcAnswer(qId, value) {
-            userAnswers[qId] = value;
-            updateProgress();
-        }
-
-        function updateProgress() {
-            const answered = Object.keys(userAnswers).length;
-            const total = questions.length;
-            const percentage = (answered / total) * 100;
-            
-            document.getElementById('progress').textContent = `${answered}/${total}`;
-            document.getElementById('progressBar').style.width = `${percentage}%`;
-        }
-
-        // ==================== TIMER ====================
         function startTimer() {
+            document.getElementById('timer-container').style.display = 'block';
             timerInterval = setInterval(() => {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
                 const timerEl = document.getElementById('timer');
-                timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                timerEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
                 
-                if (timeLeft <= 300) { // Last 5 minutes
-                    timerEl.classList.add('timer-warning');
-                }
-                
-                if (timeLeft <= 0) {
+                if (timeRemaining <= 300) timerEl.classList.add('timer-warning');
+                if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
-                    submitExam();
+                    alert("انتهى الوقت! سيتم تسليم الامتحان تلقائياً.");
+                    gradeExam();
                 }
             }, 1000);
         }
 
-        // ==================== SUBMIT & GRADE ====================
-        function submitExam() {
-            if (!confirm('هل أنت متأكد من تسليم الامتحان؟')) return;
-            
-            clearInterval(timerInterval);
-            
-            let totalScore = 0;
-            let correctCount = 0;
-            let resultsHTML = '';
-            
-            questions.forEach((q, index) => {
-                const userAns = userAnswers[q.id];
-                let isCorrect = false;
-                let userAnsText = '';
-                let correctAnsText = '';
-                
-                if (q.type === 'mcq') {
-                    isCorrect = userAns === q.correct;
-                    userAnsText = userAns !== undefined ? q.options[userAns] : 'لم يتم الإجابة';
-                    correctAnsText = q.options[q.correct];
-                    
-                    // Highlight correct/wrong
-                    if (userAns !== undefined) {
-                        const userOpt = document.getElementById(`opt${q.id}_${userAns}`);
-                        if (isCorrect) {
-                            userOpt.classList.add('option-correct');
-                        } else {
-                            userOpt.classList.add('option-wrong');
-                        }
-                    }
-                    const correctOpt = document.getElementById(`opt${q.id}_${q.correct}`);
-                    if (!isCorrect && userAns !== undefined) {
-                        correctOpt.classList.add('option-correct');
-                    }
-                } else {
-                    // Calculation
-                    if (userAns !== undefined && userAns !== '') {
-                        const numAns = parseFloat(userAns);
-                        const numCorrect = parseFloat(q.answer);
-                        isCorrect = Math.abs(numAns - numCorrect) < 0.01;
-                        userAnsText = userAns + ' ' + q.unit;
-                    } else {
-                        userAnsText = 'لم يتم الإجابة';
-                    }
-                    correctAnsText = q.answer + ' ' + q.unit;
-                }
-                
-                if (isCorrect) {
-                    totalScore += q.points;
-                    correctCount++;
-                }
-                
-                // Show explanation
-                document.getElementById(`explanation${q.id}`).classList.remove('hidden');
-                
-                resultsHTML += `
-                    <div class="flex items-center gap-3 p-3 rounded-lg ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
-                        <span class="text-2xl">${isCorrect ? '✅' : '❌'}</span>
-                        <span class="flex-1">السؤال ${index + 1}</span>
-                        <span class="font-semibold ${isCorrect ? 'text-green-700' : 'text-red-700'}">${isCorrect ? q.points : 0}/${q.points}</span>
-                    </div>
-                `;
-            });
-            
-            const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
-            const percentage = ((totalScore / totalPoints) * 100).toFixed(1);
-            const gradeColor = percentage >= 90 ? 'green' : percentage >= 75 ? 'blue' : percentage >= 60 ? 'yellow' : 'red';
-            const gradeMessage = percentage >= 90 ? 'ممتاز! 🌟' : percentage >= 75 ? 'جيد جداً! 👏' : percentage >= 60 ? 'جيد 👍' : 'يحتاج مراجعة 📚';
-            
-            const studentName = document.getElementById('studentName').value || 'طالب';
-            
-            const resultsContent = `
-                <div class="text-center mb-6">
-                    <div class="text-6xl mb-3">${percentage >= 60 ? '🎉' : '📚'}</div>
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">نتيجة الامتحان</h2>
-                    <p class="text-gray-600">${studentName}</p>
-                </div>
-                
-                <div class="bg-gradient-to-br from-${gradeColor}-100 to-${gradeColor}-200 rounded-2xl p-8 mb-6 text-center">
-                    <div class="text-7xl font-bold text-${gradeColor}-700 mb-2">${percentage}%</div>
-                    <div class="text-2xl font-bold text-${gradeColor}-800 mb-2">${gradeMessage}</div>
-                    <div class="text-xl text-gray-700">
-                        <span class="font-bold">${totalScore}</span> / <span>${totalPoints}</span> درجة
-                    </div>
-                    <div class="text-gray-600 mt-2">
-                        ${correctCount} إجابة صحيحة من ${questions.length}
-                    </div>
-                </div>
-                
-                <h3 class="font-bold text-xl mb-4 text-gray-800">📊 تفاصيل الإجابات:</h3>
-                <div class="space-y-2 mb-6">
-                    ${resultsHTML}
-                </div>
-                
-                <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-                    <h4 class="font-bold text-blue-800 mb-2">💡 نصيحة:</h4>
-                    <p class="text-gray-700">${percentage >= 75 ? 'أداء رائع! راجع الأسئلة التي أخطأت فيها لتعزيز فهمك.' : 'راجع الدرس جيداً وحاول مرة أخرى. الممارسة تصنع المعجزات!'}</p>
-                </div>
-            `;
-            
-            document.getElementById('resultsContent').innerHTML = resultsContent;
-            document.getElementById('resultsSection').classList.remove('hidden');
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
-            document.getElementById('submitBtn').innerHTML = '✅ تم تسليم الامتحان';
-            
-            // Scroll to results
-            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        function toggleAnswers() {
+            document.querySelectorAll('.answer-box').forEach(el => el.classList.toggle('hidden'));
         }
 
-        // ==================== INITIALIZE ====================
-        renderQuestions();
-        startTimer();
+        function gradeExam() {
+            let correctCount = 0;
+            const correctAnswers = [
+                'b','b','b','c',  // Q1-4
+                'c','b','b','b',  // Q5-8
+                'b','b','b','b',  // Q9-12
+                'b','b','b','b',  // Q13-16
+                'a','b','b','a'   // Q17-20
+            ];
+
+            let sec1 = 0, sec2 = 0, sec3 = 0, sec4 = 0, sec5 = 0;
+
+            for(let i=1; i<=20; i++){
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const li = document.getElementById(`q-${i}`);
+                const isCorrect = selected && selected.value === correctAnswers[i-1];
+                
+                if (isCorrect) {
+                    correctCount++;
+                    li.classList.add('correct');
+                    li.classList.remove('incorrect');
+                    
+                    if (i <= 4) sec1++;
+                    else if (i <= 8) sec2++;
+                    else if (i <= 12) sec3++;
+                    else if (i <= 16) sec4++;
+                    else sec5++;
+                } else {
+                    li.classList.add('incorrect');
+                    li.classList.remove('correct');
+                }
+            }
+
+            const score = (correctCount / 20) * 100;
+            const successRate = Math.round(score);
+            
+            document.getElementById('res-total').textContent = `${Math.round(score)} / 100`;
+            document.getElementById('res-name').textContent = document.getElementById('studentName').value || 'طالب';
+            document.getElementById('res-date').textContent = new Date().toLocaleDateString('ar-AE');
+            
+            document.getElementById('sec1-score').textContent = `${sec1}/4`;
+            document.getElementById('sec2-score').textContent = `${sec2}/4`;
+            document.getElementById('sec3-score').textContent = `${sec3}/4`;
+            document.getElementById('sec4-score').textContent = `${sec4}/4`;
+            document.getElementById('sec5-score').textContent = `${sec5}/4`;
+            
+            const badge = document.getElementById('success-badge');
+            const percent = document.getElementById('success-percent');
+            percent.textContent = `${successRate}%`;
+            
+            if(successRate >= 90) {
+                badge.textContent = 'ممتاز';
+                badge.className = 'success-badge grade-excellent';
+            } else if(successRate >= 75) {
+                badge.textContent = 'جيد جداً';
+                badge.className = 'success-badge grade-good';
+            } else if(successRate >= 50) {
+                badge.textContent = 'جيد';
+                badge.className = 'success-badge grade-pass';
+            } else {
+                badge.textContent = 'يحتاج تحسين';
+                badge.className = 'success-badge grade-fail';
+            }
+            
+            document.getElementById('results-panel').classList.remove('hidden');
+            document.getElementById('results-panel').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('sendEmailBtn').classList.remove('hidden');
+        }
+
+        function sendResultsToEmail() {
+            const btn = document.getElementById('sendEmailBtn');
+            const status = document.getElementById('emailStatus');
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري الإرسال...';
+
+            const name = document.getElementById('studentName').value || 'N/A';
+            const studentClass = document.getElementById('studentClass').value || 'غير محدد';
+            const date = document.querySelector('input[type="text"]').value || new Date().toLocaleDateString('ar-AE');
+            const score = document.getElementById('res-total').textContent;
+            const successRate = document.getElementById('success-percent').textContent;
+            const sec1 = document.getElementById('sec1-score').textContent;
+            const sec2 = document.getElementById('sec2-score').textContent;
+            const sec3 = document.getElementById('sec3-score').textContent;
+            const sec4 = document.getElementById('sec4-score').textContent;
+            const sec5 = document.getElementById('sec5-score').textContent;
+
+            let answersHTML = `<div dir="rtl" style="font-family: 'Cairo', sans-serif;">
+                <h3 style="color:#4F46E5;">📊 تفصيل الأداء - امتحان تطبيقات الدائرة الكهربية:</h3>
+                <p><strong>الطالب:</strong> ${name} | <strong>الشعبة:</strong> ${studentClass}</p>
+                <ul>
+                    <li>الحمل الزائد والدائرة القصيرة: ${sec1}</li>
+                    <li>أجهزة الحماية: ${sec2}</li>
+                    <li>الدوائر المنزلية وسعة الدوائر: ${sec3}</li>
+                    <li>قوانين كيرشوف وأدوات القياس: ${sec4}</li>
+                    <li>مسائل حسابية وتطبيقات: ${sec5}</li>
+                </ul>
+                <table style="border:1px solid #e5e7eb; border-collapse:collapse; width:100%; font-size:14px; direction: rtl;">
+                <tr style="background:#4F46E5; color:white;"><th style="border:1px solid #e5e7eb; padding:8px;">السؤال</th><th style="border:1px solid #e5e7eb; padding:8px;">الإجابة المختارة</th><th style="border:1px solid #e5e7eb; padding:8px;">الحالة</th></tr>`;
+            
+            const correctAnswers = ['b','b','b','c','c','b','b','b','b','b','b','b','b','b','b','b','a','b','b','a'];
+            
+            for(let i=1; i<=20; i++) {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                const isCorrect = sel && sel.value === correctAnswers[i-1];
+                answersHTML += `<tr><td style="border:1px solid #e5e7eb; padding:6px;">${i}</td><td style="border:1px solid #e5e7eb; padding:6px;">${sel ? sel.value : '-'}</td><td style="border:1px solid #e5e7eb; padding:6px; color:${isCorrect ? 'green' : 'red'}">${isCorrect ? '✅ صحيح' : '❌ خطأ'}</td></tr>`;
+            }
+            answersHTML += '</table></div>';
+
+            const templateParams = {
+                to_email: TARGET_EMAIL,
+                student_name: name,
+                exam_date: date,
+                total_score: score,
+                success_rate: successRate,
+                answers_table: answersHTML
+            };
+
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
+                .then(() => {
+                    status.textContent = '✅ تم الإرسال بنجاح! تحقق من Gmail.';
+                    status.style.color = '#059669';
+                    btn.textContent = '✓ تم الإرسال';
+                })
+                .catch(err => {
+                    status.textContent = '❌ فشل الإرسال. تحقق من الإعدادات.';
+                    status.style.color = '#dc2626';
+                    btn.disabled = false;
+                    btn.textContent = '📧 إعادة المحاولة';
+                    console.error('EmailJS Error:', err);
+                });
+        }
+
+        window.addEventListener('DOMContentLoaded', startTimer);
     </script>
 </body>
 </html>
