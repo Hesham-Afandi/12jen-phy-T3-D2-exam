@@ -1,1 +1,546 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحان تطبيقات الدائرة الكهربية - 12 عام فيزياء</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .formula { font-family: 'Times New Roman', serif; direction: ltr; display: inline-block; }
+        .option-correct { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; transform: scale(1.02); }
+        .option-wrong { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; animation: shake 0.5s; }
+        .option-selected { border: 3px solid #6366f1; background: #eef2ff; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-fill { transition: width 0.5s ease; }
+        .timer-warning { animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen p-4 md:p-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden mb-6 fade-in">
+            <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 text-white text-center">
+                <div class="text-6xl mb-3">⚡</div>
+                <h1 class="text-3xl md:text-4xl font-bold mb-2">امتحان تطبيقات الدائرة الكهربية</h1>
+                <h2 class="text-xl md:text-2xl font-semibold opacity-90">الصف الثاني عشر - عام - فيزياء</h2>
+                <h3 class="text-lg opacity-80 mt-2">الوحدة الأولى: الكهرباء والتيار</h3>
+            </div>
+            <div class="p-6 bg-gray-50">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="bg-white rounded-xl p-4 shadow">
+                        <div class="text-3xl mb-1">📝</div>
+                        <div class="text-sm text-gray-500">عدد الأسئلة</div>
+                        <div class="text-2xl font-bold text-indigo-600" id="totalQ">15</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow">
+                        <div class="text-3xl mb-1">⭐</div>
+                        <div class="text-sm text-gray-500">الدرجة الكلية</div>
+                        <div class="text-2xl font-bold text-purple-600">30</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow">
+                        <div class="text-3xl mb-1">⏱️</div>
+                        <div class="text-sm text-gray-500">الوقت المتبقي</div>
+                        <div class="text-2xl font-bold text-pink-600" id="timer">30:00</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow">
+                        <div class="text-3xl mb-1">📊</div>
+                        <div class="text-sm text-gray-500">التقدم</div>
+                        <div class="text-2xl font-bold text-green-600" id="progress">0/15</div>
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="mt-4 bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div id="progressBar" class="progress-fill bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Student Info -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 fade-in">
+            <h3 class="font-bold text-lg mb-4 text-gray-800">📋 بيانات الطالب</h3>
+            <div class="grid md:grid-cols-3 gap-4">
+                <input type="text" id="studentName" placeholder="الاسم الثلاثي" class="border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-indigo-500 focus:outline-none">
+                <input type="text" id="studentId" placeholder="رقم الجلوس" class="border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-indigo-500 focus:outline-none">
+                <input type="text" id="studentClass" placeholder="الشعبة / الفصل" class="border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-indigo-500 focus:outline-none">
+            </div>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questionsContainer" class="space-y-6"></div>
+
+        <!-- Submit Button -->
+        <div class="mt-8 text-center">
+            <button onclick="submitExam()" id="submitBtn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xl font-bold px-12 py-4 rounded-2xl shadow-2xl transform hover:scale-105 transition">
+                📝 تسليم الامتحان
+            </button>
+            <p class="text-sm text-gray-500 mt-3">تأكد من إجابة جميع الأسئلة قبل التسليم</p>
+        </div>
+
+        <!-- Results Section (Hidden Initially) -->
+        <div id="resultsSection" class="hidden mt-8 bg-white rounded-3xl shadow-2xl p-8 fade-in">
+            <div id="resultsContent"></div>
+        </div>
+
+        <!-- Formulas Reference -->
+        <div class="mt-8 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl p-6 border-2 border-indigo-300">
+            <h3 class="font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                <span class="text-2xl">📐</span> الصيغ والمفاهيم المساعدة
+            </h3>
+            <div class="grid md:grid-cols-2 gap-3 text-sm">
+                <div class="formula bg-white p-3 rounded-lg shadow">V = I × R</div>
+                <div class="formula bg-white p-3 rounded-lg shadow">P = V × I = I²R = V²/R</div>
+                <div class="formula bg-white p-3 rounded-lg shadow">R_total = R₁ + R₂ + ... (توالي)</div>
+                <div class="formula bg-white p-3 rounded-lg shadow">1/R = 1/R₁ + 1/R₂ + ... (توازي)</div>
+                <div class="formula bg-white p-3 rounded-lg shadow">ΣI_in = ΣI_out (كيرشوف 1)</div>
+                <div class="formula bg-white p-3 rounded-lg shadow">ΣV = 0 (كيرشوف 2)</div>
+                <div class="formula bg-white p-3 rounded-lg shadow">E = P × t</div>
+                <div class="formula bg-white p-3 rounded-lg shadow">Q = I² × R × t</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== QUESTIONS DATABASE ====================
+        const questions = [
+            {
+                id: 1,
+                type: 'mcq',
+                points: 2,
+                question: 'ما هو المقصود بـ "الحمل الزائد" (Overload) في الدائرة الكهربية؟',
+                options: [
+                    'توصيل مصدر جهد بدونه حمل',
+                    'سحب تيار أكبر من السعة المسموحة للدائرة',
+                    'انقطاع التيار فجأة',
+                    'ارتفاع الجهد عن المعدل الطبيعي'
+                ],
+                correct: 1,
+                explanation: 'الحمل الزائد يحدث عندما يسحب الحمل تياراً أكبر من السعة الآمنة للدائرة، مما يؤدي لارتفاع درجة الحرارة.'
+            },
+            {
+                id: 2,
+                type: 'mcq',
+                points: 2,
+                question: 'ما الفرق الرئيسي بين "الدائرة القصيرة" (Short Circuit) و"الحمل الزائد"؟',
+                options: [
+                    'لا يوجد فرق بينهما',
+                    'الدائرة القصيرة مسار منخفض المقاومة جداً يتجاوز الحمل',
+                    'الحمل الزائد أخطر من الدائرة القصيرة',
+                    'الدائرة القصيرة تحدث فقط في التيار المتناوب'
+                ],
+                correct: 1,
+                explanation: 'الدائرة القصيرة تحدث عندما يتجاوز التيار الحمل بسبب مسار منخفض المقاومة جداً، بينما الحمل الزائد هو سحب تيار أكبر من السقة المسموحة.'
+            },
+            {
+                id: 3,
+                type: 'mcq',
+                points: 2,
+                question: 'ما وظيفة المنصهر (Fuse) في الدائرة الكهربية؟',
+                options: [
+                    'زيادة التيار في الدائرة',
+                    'تخزين الطاقة الكهربية',
+                    'حماية الدائرة من التيار الزائد بالانصهار وقطع التيار',
+                    'تحويل التيار المستمر إلى متناوب'
+                ],
+                correct: 2,
+                explanation: 'المنصهر يحتوي على سلك رفيع ينصهر عند مرور تيار أكبر من قيمته المقننة، فيقطع الدائرة ويحمي الأجهزة.'
+            },
+            {
+                id: 4,
+                type: 'mcq',
+                points: 2,
+                question: 'ما الميزة الرئيسية لقاطع الدائرة (Circuit Breaker) على المنصهر؟',
+                options: [
+                    'أرخص ثمناً',
+                    'يمكن إعادة تشغيله بعد فصل التيار دون استبدال',
+                    'أصغر حجماً',
+                    'يتحمل تياراً أعلى دائماً'
+                ],
+                correct: 1,
+                explanation: 'قاطع الدائرة يمكن إعادة ضبطه (Reset) بعد فصل التيار، بينما المنصهر يجب استبداله بعد انصهاره.'
+            },
+            {
+                id: 5,
+                type: 'mcq',
+                points: 2,
+                question: 'ما الوظيفة الأساسية لقاطع التسرب الأرضي (GFI/GFCI)؟',
+                options: [
+                    'حماية الأجهزة من الحمل الزائد',
+                    'حماية الإنسان من الصدمة الكهربية عند حدوث تسرب تيار',
+                    'تثبيت الجهد في الدائرة',
+                    'تحويل التيار المتناوب إلى مستمر'
+                ],
+                correct: 1,
+                explanation: 'GFI يكتشف أي فرق بين التيار الداخل والخارج (تسرب) ويقطع التيار فوراً لحماية الإنسان من الصعق.'
+            },
+            {
+                id: 6,
+                type: 'mcq',
+                points: 2,
+                question: 'لماذا تُوصَّل الأجهزة المنزلية على التوازي وليس على التوالي؟',
+                options: [
+                    'لتوفير في الأسلاك',
+                    'لأن كل جهاز يحتاج نفس الجهد (120V) ويعمل مستقلاً عن الآخر',
+                    'لأن التوالي أسهل في التركيب',
+                    'لأن التوازي يقلل استهلاك الطاقة'
+                ],
+                correct: 1,
+                explanation: 'في التوازي، كل جهاز يحصل على الجهد الكامل (120V) ويعمل بشكل مستقل، فإذا تعطل جهاز لا تتأثر الأجهزة الأخرى.'
+            },
+            {
+                id: 7,
+                type: 'mcq',
+                points: 2,
+                question: 'في دائرة منزلية سعتها 15 أمبير، إذا كان هناك جهازان يسحبان 6 أمبير و 7 أمبير، هل يمكن تشغيل جهاز ثالث يسحب 5 أمبير؟',
+                options: [
+                    'نعم، لأن المجموع 18 أمبير',
+                    'لا، لأن المجموع 18 أمبير وهو أكبر من سعة الدائرة 15 أمبير',
+                    'نعم، لأن الأجهزة على التوازي',
+                    'لا يمكن تحديد ذلك بدون معرفة الجهد'
+                ],
+                correct: 1,
+                explanation: 'مجموع التيار = 6 + 7 + 5 = 18 أمبير، وهذا يتجاوز سعة الدائرة (15A)، مما سيؤدي لفصل القاطع.'
+            },
+            {
+                id: 8,
+                type: 'mcq',
+                points: 2,
+                question: 'كيف يُوصَّل الأميتر (Ammeter) في الدائرة لقياس التيار؟',
+                options: [
+                    'على التوازي مع المقاومة',
+                    'على التوالي مع العنصر المراد قياس التيار المار فيه',
+                    'يُوصَّل مباشرة بمصدر الجهد',
+                    'لا يحتاج لتوصيل'
+                ],
+                correct: 1,
+                explanation: 'الأميتر يُوصَّل على التوالي حتى يمر فيه نفس التيار المراد قياسه، ومقاومته الداخلية صغيرة جداً.'
+            },
+            {
+                id: 9,
+                type: 'mcq',
+                points: 2,
+                question: 'كيف يُوصَّل الفولتميتر (Voltmeter) في الدائرة لقياس فرق الجهد؟',
+                options: [
+                    'على التوالي مع المقاومة',
+                    'على التوازي مع العنصر المراد قياس الجهد عليه',
+                    'يُوصَّل مباشرة بمصدر الجهد فقط',
+                    'لا يمكن قياس الجهد'
+                ],
+                correct: 1,
+                explanation: 'الفولتميتر يُوصَّل على التوازي مع العنصر المراد قياس الجهد عليه، ومقاومته الداخلية كبيرة جداً.'
+            },
+            {
+                id: 10,
+                type: 'mcq',
+                points: 2,
+                question: 'ينص قانون كيرشوف الأول (KCL) على أن:',
+                options: [
+                    'مجموع الجهود في حلقة مغلقة يساوي صفراً',
+                    'مجموع التيارات الداخلة إلى عقدة = مجموع التيارات الخارجة منها',
+                    'التيار يتناقص في كل مقاومة',
+                    'الجهد يتوزع بالتساوي على جميع الفروع'
+                ],
+                correct: 1,
+                explanation: 'قانون كيرشوف الأول (قانون العقد) مبني على حفظ الشحنة: ΣI_in = ΣI_out'
+            },
+            {
+                id: 11,
+                type: 'mcq',
+                points: 2,
+                question: 'ينص قانون كيرشوف الثاني (KVL) على أن:',
+                options: [
+                    'التيار ثابت في جميع فروع الدائرة',
+                    'المجموع الجبري للقوى الدافعة = المجموع الجبري لهبوطات الجهد في أي حلقة مغلقة',
+                    'الجهد يتناقص في كل عقدة',
+                    'المقاومة الكلية = مجموع المقاومات'
+                ],
+                correct: 1,
+                explanation: 'قانون كيرشوف الثاني (قانون الحلقات) مبني على حفظ الطاقة: Σε = ΣIR أو ΣV = 0'
+            },
+            {
+                id: 12,
+                type: 'calculation',
+                points: 2,
+                question: 'ثلاث مقاومات R₁=10Ω، R₂=20Ω، R₃=30Ω وُصلت على التوالي. احسب المقاومة المكافئة:',
+                answer: '60',
+                unit: 'Ω',
+                explanation: 'في التوالي: R_total = R₁ + R₂ + R₃ = 10 + 20 + 30 = 60 Ω'
+            },
+            {
+                id: 13,
+                type: 'calculation',
+                points: 2,
+                question: 'مقاومتان R₁=6Ω و R₂=3Ω وُصلتا على التوازي. احسب المقاومة المكافئة:',
+                answer: '2',
+                unit: 'Ω',
+                explanation: 'في التوازي: 1/R = 1/R₁ + 1/R₂ = 1/6 + 1/3 = 1/6 + 2/6 = 3/6 = 1/2، إذن R = 2 Ω'
+            },
+            {
+                id: 14,
+                type: 'calculation',
+                points: 2,
+                question: 'مصباح يعمل على جهد 120V ويسحب تيار 2A. احسب القدرة الكهربية المستهلكة:',
+                answer: '240',
+                unit: 'W',
+                explanation: 'P = V × I = 120 × 2 = 240 W'
+            },
+            {
+                id: 15,
+                type: 'mcq',
+                points: 2,
+                question: 'في الدوائر المنزلية، السلك "الحي" (Hot) لونه عادة يكون:',
+                options: [
+                    'أبيض',
+                    'أسود أو أحمر',
+                    'أخضر أو عارٍ',
+                    'أزرق'
+                ],
+                correct: 1,
+                explanation: 'السلك الحي (Hot) يكون عادة أسود أو أحمر، السلك المتعادل (Neutral) أبيض، وسلك التأريض أخضر أو عارٍ.'
+            }
+        ];
+
+        // ==================== STATE ====================
+        let userAnswers = {};
+        let timeLeft = 30 * 60; // 30 minutes in seconds
+        let timerInterval;
+
+        // ==================== RENDER QUESTIONS ====================
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            let html = '';
+            
+            questions.forEach((q, index) => {
+                const qNumber = index + 1;
+                const bgColor = index % 3 === 0 ? 'from-blue-50 to-indigo-50 border-blue-500' : 
+                               index % 3 === 1 ? 'from-purple-50 to-pink-50 border-purple-500' : 
+                               'from-green-50 to-teal-50 border-green-500';
+                
+                html += `
+                    <div class="bg-gradient-to-br ${bgColor} rounded-2xl p-6 shadow-lg border-r-4 fade-in" id="q${q.id}">
+                        <div class="flex items-start justify-between mb-4 flex-wrap gap-2">
+                            <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2">
+                                <span class="bg-white text-indigo-600 rounded-full w-10 h-10 flex items-center justify-center font-bold shadow">${qNumber}</span>
+                                السؤال ${qNumber}
+                            </h3>
+                            <span class="bg-white px-3 py-1 rounded-full text-sm font-semibold text-purple-600 shadow">${q.points} ${q.points > 1 ? 'درجات' : 'درجة'}</span>
+                        </div>
+                        <p class="font-semibold text-gray-800 mb-4 text-lg">${q.question}</p>
+                        
+                        ${q.type === 'mcq' ? renderMCQ(q) : renderCalculation(q)}
+                        
+                        <div id="explanation${q.id}" class="hidden mt-4 bg-white rounded-xl p-4 border-2 border-green-400">
+                            <div class="flex items-start gap-2">
+                                <span class="text-2xl">💡</span>
+                                <div>
+                                    <p class="font-bold text-green-700 mb-1">الإجابة الصحيحة:</p>
+                                    <p class="text-gray-700">${q.explanation}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function renderMCQ(q) {
+            const letters = ['أ', 'ب', 'ج', 'د'];
+            return `
+                <div class="space-y-3">
+                    ${q.options.map((opt, i) => `
+                        <label class="flex items-center gap-3 bg-white rounded-xl p-4 cursor-pointer hover:shadow-lg transition border-2 border-transparent" id="opt${q.id}_${i}">
+                            <input type="radio" name="q${q.id}" value="${i}" onchange="selectAnswer(${q.id}, ${i})" class="w-5 h-5 text-indigo-600">
+                            <span class="bg-indigo-100 text-indigo-700 rounded-full w-8 h-8 flex items-center justify-center font-bold">${letters[i]}</span>
+                            <span class="flex-1 text-gray-800">${opt}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderCalculation(q) {
+            return `
+                <div class="bg-white rounded-xl p-4">
+                    <label class="block text-gray-700 mb-2 font-semibold">الإجابة:</label>
+                    <div class="flex items-center gap-3">
+                        <input type="number" step="any" id="calc${q.id}" oninput="selectCalcAnswer(${q.id}, this.value)" 
+                            class="flex-1 border-2 border-gray-300 rounded-lg px-4 py-3 focus:border-indigo-500 focus:outline-none text-lg" 
+                            placeholder="اكتب القيمة الرقمية">
+                        <span class="bg-indigo-100 text-indigo-700 px-4 py-3 rounded-lg font-bold">${q.unit}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== ANSWER HANDLING ====================
+        function selectAnswer(qId, optIndex) {
+            userAnswers[qId] = optIndex;
+            updateProgress();
+            
+            // Highlight selected
+            const options = document.querySelectorAll(`[id^="opt${qId}_"]`);
+            options.forEach((opt, i) => {
+                if (i === optIndex) {
+                    opt.classList.add('option-selected');
+                } else {
+                    opt.classList.remove('option-selected');
+                }
+            });
+        }
+
+        function selectCalcAnswer(qId, value) {
+            userAnswers[qId] = value;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(userAnswers).length;
+            const total = questions.length;
+            const percentage = (answered / total) * 100;
+            
+            document.getElementById('progress').textContent = `${answered}/${total}`;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        // ==================== TIMER ====================
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                const timerEl = document.getElementById('timer');
+                timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                
+                if (timeLeft <= 300) { // Last 5 minutes
+                    timerEl.classList.add('timer-warning');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        // ==================== SUBMIT & GRADE ====================
+        function submitExam() {
+            if (!confirm('هل أنت متأكد من تسليم الامتحان؟')) return;
+            
+            clearInterval(timerInterval);
+            
+            let totalScore = 0;
+            let correctCount = 0;
+            let resultsHTML = '';
+            
+            questions.forEach((q, index) => {
+                const userAns = userAnswers[q.id];
+                let isCorrect = false;
+                let userAnsText = '';
+                let correctAnsText = '';
+                
+                if (q.type === 'mcq') {
+                    isCorrect = userAns === q.correct;
+                    userAnsText = userAns !== undefined ? q.options[userAns] : 'لم يتم الإجابة';
+                    correctAnsText = q.options[q.correct];
+                    
+                    // Highlight correct/wrong
+                    if (userAns !== undefined) {
+                        const userOpt = document.getElementById(`opt${q.id}_${userAns}`);
+                        if (isCorrect) {
+                            userOpt.classList.add('option-correct');
+                        } else {
+                            userOpt.classList.add('option-wrong');
+                        }
+                    }
+                    const correctOpt = document.getElementById(`opt${q.id}_${q.correct}`);
+                    if (!isCorrect && userAns !== undefined) {
+                        correctOpt.classList.add('option-correct');
+                    }
+                } else {
+                    // Calculation
+                    if (userAns !== undefined && userAns !== '') {
+                        const numAns = parseFloat(userAns);
+                        const numCorrect = parseFloat(q.answer);
+                        isCorrect = Math.abs(numAns - numCorrect) < 0.01;
+                        userAnsText = userAns + ' ' + q.unit;
+                    } else {
+                        userAnsText = 'لم يتم الإجابة';
+                    }
+                    correctAnsText = q.answer + ' ' + q.unit;
+                }
+                
+                if (isCorrect) {
+                    totalScore += q.points;
+                    correctCount++;
+                }
+                
+                // Show explanation
+                document.getElementById(`explanation${q.id}`).classList.remove('hidden');
+                
+                resultsHTML += `
+                    <div class="flex items-center gap-3 p-3 rounded-lg ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
+                        <span class="text-2xl">${isCorrect ? '✅' : '❌'}</span>
+                        <span class="flex-1">السؤال ${index + 1}</span>
+                        <span class="font-semibold ${isCorrect ? 'text-green-700' : 'text-red-700'}">${isCorrect ? q.points : 0}/${q.points}</span>
+                    </div>
+                `;
+            });
+            
+            const totalPoints = questions.reduce((sum, q) => sum + q.points, 0);
+            const percentage = ((totalScore / totalPoints) * 100).toFixed(1);
+            const gradeColor = percentage >= 90 ? 'green' : percentage >= 75 ? 'blue' : percentage >= 60 ? 'yellow' : 'red';
+            const gradeMessage = percentage >= 90 ? 'ممتاز! 🌟' : percentage >= 75 ? 'جيد جداً! 👏' : percentage >= 60 ? 'جيد 👍' : 'يحتاج مراجعة 📚';
+            
+            const studentName = document.getElementById('studentName').value || 'طالب';
+            
+            const resultsContent = `
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-3">${percentage >= 60 ? '🎉' : '📚'}</div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">نتيجة الامتحان</h2>
+                    <p class="text-gray-600">${studentName}</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-${gradeColor}-100 to-${gradeColor}-200 rounded-2xl p-8 mb-6 text-center">
+                    <div class="text-7xl font-bold text-${gradeColor}-700 mb-2">${percentage}%</div>
+                    <div class="text-2xl font-bold text-${gradeColor}-800 mb-2">${gradeMessage}</div>
+                    <div class="text-xl text-gray-700">
+                        <span class="font-bold">${totalScore}</span> / <span>${totalPoints}</span> درجة
+                    </div>
+                    <div class="text-gray-600 mt-2">
+                        ${correctCount} إجابة صحيحة من ${questions.length}
+                    </div>
+                </div>
+                
+                <h3 class="font-bold text-xl mb-4 text-gray-800">📊 تفاصيل الإجابات:</h3>
+                <div class="space-y-2 mb-6">
+                    ${resultsHTML}
+                </div>
+                
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                    <h4 class="font-bold text-blue-800 mb-2">💡 نصيحة:</h4>
+                    <p class="text-gray-700">${percentage >= 75 ? 'أداء رائع! راجع الأسئلة التي أخطأت فيها لتعزيز فهمك.' : 'راجع الدرس جيداً وحاول مرة أخرى. الممارسة تصنع المعجزات!'}</p>
+                </div>
+            `;
+            
+            document.getElementById('resultsContent').innerHTML = resultsContent;
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('submitBtn').innerHTML = '✅ تم تسليم الامتحان';
+            
+            // Scroll to results
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ==================== INITIALIZE ====================
+        renderQuestions();
+        startTimer();
+    </script>
+</body>
+</html>
